@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { MonthData, MonthSummary, MonthInsight } from '../types';
 
-const api = axios.create({ baseURL: '/api' });
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || '/api',
+});
 
 export const fetchAllMonths = async (): Promise<MonthSummary[]> => {
   const { data } = await api.get('/months');
