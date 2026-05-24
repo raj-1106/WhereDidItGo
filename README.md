@@ -111,23 +111,24 @@ Open [http://localhost:3000](http://localhost:3000) and begin your journey of se
 ---
 
 ## Folder Structure
-
+```bash
 whereDidItGo/
 ├── backend/
-│   ├── src/
-│   │   ├── models/       # MongoDB schemas
-│   │   ├── routes/       # API routes
-│   │   ├── controllers/  # Business logic
-│   │   └── index.ts      # Entry point
-│   └── .env              # Secrets (don't commit this)
-└── frontend/
-└── src/
-├── pages/        # Dashboard, MonthView, Insights
-├── components/   # Shared UI
-├── api/          # Backend calls
-└── types/        # TypeScript interfaces
----
+│ ├── src/
+│ │ ├── models/ # MongoDB schemas
+│ │ ├── routes/ # API routes
+│ │ ├── controllers/ # Business logic
+│ │ └── index.ts # Entry point
+│ └── .env # Secrets (don't commit this)
 
+├── frontend/
+│ ├── src/
+│ │ ├── pages/ # Dashboard, MonthView, Insights
+│ │ ├── components/ # Shared UI
+│ │ ├── api/ # Backend calls
+│ │ └── types/ # TypeScript interfaces
+---
+```
 ## The AI Advisor
 
 The Insights page has an **"Analyze My Spending"** button that sends your actual numbers to Groq's Llama 3.3 70B model. It returns:
