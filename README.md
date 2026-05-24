@@ -111,6 +111,7 @@ Open [http://localhost:3000](http://localhost:3000) and begin your journey of se
 ---
 
 ## Folder Structure
+
 whereDidItGo/
 ├── backend/
 │   ├── src/
