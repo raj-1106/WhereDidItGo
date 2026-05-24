@@ -31,7 +31,7 @@ WhereDidItGo is a full-stack expense tracker that watches your salary walk in an
 | Frontend | React + TypeScript + Recharts |
 | Backend | Node.js + Express + TypeScript |
 | Database | MongoDB Atlas |
-| AI | Groq API (llama-3.3-70b) |
+| AI | Groq API (llama-3.1-8b-instant) |
 | Fonts | Syne + DM Mono |
 | Theme | Emerald & Gold — because your money deserves to look good leaving |
 
