@@ -87,7 +87,7 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
     setSaving(true);
     setError('');
     try {
-      await upsertMonth(year, month, Number(salaryForm));
+      await upsertMonth(year, month, Number(salaryForm), data?.salaryDate ?? 7);
       load();
       setShowEditSalary(false);
     } catch {
@@ -146,7 +146,12 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
           <h1 className="page-title">{MONTH_NAMES[month - 1]} {year}</h1>
-          <p className="page-subtitle">{data.expenses.length} expense{data.expenses.length !== 1 ? 's' : ''} recorded</p>
+          <p className="page-subtitle">
+            {data.salaryDate
+              ? `Period: ${data.salaryDate} ${MONTH_NAMES[month - 1]} → ${data.salaryDate - 1} ${MONTH_NAMES[month % 12]} · ${data.expenses.length} expense${data.expenses.length !== 1 ? 's' : ''}`
+              : `${data.expenses.length} expense${data.expenses.length !== 1 ? 's' : ''} recorded`
+            }
+          </p>  
         </div>
         <button className="btn btn-primary" onClick={() => { setError(''); setShowAddExpense(true); }}>
           + Add Expense
