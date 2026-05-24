@@ -46,6 +46,15 @@ export const CATEGORIES = [
   'Other',
 ] as const;
 
+export interface MonthData {
+  _id: string;
+  year: number;
+  month: number;
+  salary: number;
+  salaryDate: number;
+  expenses: Expense[];
+}
+
 export type Category = (typeof CATEGORIES)[number];
 
 export const MONTH_NAMES = [
