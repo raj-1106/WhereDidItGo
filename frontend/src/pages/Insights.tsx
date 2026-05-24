@@ -74,21 +74,13 @@ Respond ONLY with a JSON object, no markdown, no explanation outside the JSON:
 Give 3-5 tips. Be direct and specific to their actual numbers. Reference Indian context where relevant.`;
 
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      const response = await fetch('/api/ai-advice', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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',
-        },
-        body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }],
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
       });
 
       const data = await response.json();
-      console.log('Groq response:', JSON.stringify(data));
       const text = data.choices?.[0]?.message?.content || '';
       const clean = text.replace(/```json|```/g, '').trim();
       const parsed: AIAdvice = JSON.parse(clean);
