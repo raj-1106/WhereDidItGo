@@ -17,6 +17,7 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
     year: now.getFullYear(),
     month: now.getMonth() + 1,
     salary: '',
+    salaryDate: 7,
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -44,7 +45,7 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
     setSaving(true);
     setError('');
     try {
-      await upsertMonth(form.year, form.month, Number(form.salary));
+      await upsertMonth(form.year, form.month, Number(form.salary), form.salaryDate);
       setShowModal(false);
       load();
     } catch {
@@ -195,6 +196,18 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
                   value={form.salary}
                   onChange={(e) => setForm({ ...form, salary: e.target.value })}
                   autoFocus
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Salary Date</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  min={1}
+                  max={28}
+                  placeholder="e.g. 7"
+                  value={form.salaryDate}
+                  onChange={(e) => setForm({ ...form, salaryDate: Number(e.target.value) })}
                 />
               </div>
             </div>
