@@ -11,6 +11,7 @@ export interface IMonth extends Document {
   year: number;
   month: number; // 1-12
   salary: number;
+  salaryDate: number;
   expenses: IExpense[];
   createdAt: Date;
   updatedAt: Date;
@@ -45,6 +46,7 @@ const MonthSchema = new Schema<IMonth>(
     year: { type: Number, required: true },
     month: { type: Number, required: true, min: 1, max: 12 },
     salary: { type: Number, required: true, min: 0 },
+    salaryDate: { type: Number, default: 7, min: 1, max: 28 }, // day of month
     expenses: [ExpenseSchema],
   },
   { timestamps: true }
