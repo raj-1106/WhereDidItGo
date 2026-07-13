@@ -32,10 +32,17 @@ router.post('/ai-advice', async (req, res) => {
       }),
     });
     const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: 'AI request failed' });
-  }
+
+    console.log("Groq status:", response.status);
+    console.log("Groq response:", JSON.stringify(data, null, 2));
+
+    res.status(response.status).json(data);
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({
+      error: err.message,
+  });
+}
 });
 
 export default router;
