@@ -74,10 +74,22 @@ Respond ONLY with a JSON object, no markdown, no explanation outside the JSON:
 Give 3-5 tips. Be direct and specific to their actual numbers. Reference Indian context where relevant.`;
 
     try {
-      const response = await fetch('https://wherediditgo.onrender.com/api/ai-advice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+      const response = await fetch(
+  "https://wherediditgo.onrender.com/api/ai-advice",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  }
+);
+
+console.log("Status:", response.status);
+
+const raw = await response.text();
+
+console.log("Raw response:", raw);
       });
 
       const data = await response.json();
