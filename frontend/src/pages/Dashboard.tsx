@@ -130,7 +130,10 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
                       className="month-card-savings"
                       style={{ color: savings >= 0 ? 'var(--success)' : 'var(--danger)' }}
                     >
-                      {savings >= 0 ? '↑' : '↓'} ₹{Math.abs(savings).toLocaleString('en-IN')} saved
+                      {savings >= 0
+                        ? `↑ ₹${Math.abs(savings).toLocaleString('en-IN')} saved`
+                        : `↓ ₹${Math.abs(savings).toLocaleString('en-IN')} overspent`
+                      }
                     </div>
                   )}
                   {ins && (
