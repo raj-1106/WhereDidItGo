@@ -7,8 +7,13 @@ import {
   deleteExpense,
   getInsights,
 } from '../controllers/monthController';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = Router();
+
+// Every route below requires a valid Bearer token; monthController relies
+// on req.user being set here, so this must stay ahead of the route defs.
+router.use(authMiddleware);
 
 router.get('/months', getAllMonths);
 router.get('/months/:year/:month', getMonth);

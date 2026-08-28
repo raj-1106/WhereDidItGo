@@ -6,6 +6,11 @@ export interface Expense {
   date: string;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+}
+
 export interface MonthData {
   _id: string;
   year: number;

@@ -8,6 +8,7 @@ export interface IExpense {
 }
 
 export interface IMonth extends Document {
+  userId: mongoose.Types.ObjectId;
   year: number;
   month: number; // 1-12
   salary: number;
@@ -43,6 +44,7 @@ const ExpenseSchema = new Schema<IExpense>({
 
 const MonthSchema = new Schema<IMonth>(
   {
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     year: { type: Number, required: true },
     month: { type: Number, required: true, min: 1, max: 12 },
     salary: { type: Number, required: true, min: 0 },
@@ -52,6 +54,9 @@ const MonthSchema = new Schema<IMonth>(
   { timestamps: true }
 );
 
-MonthSchema.index({ year: 1, month: 1 }, { unique: true });
+// Scoped per user now, not globally: two different accounts can both
+// have a March 2026 entry. Was previously { year: 1, month: 1 } unique
+// globally, which would break as soon as a second user existed.
+MonthSchema.index({ userId: 1, year: 1, month: 1 }, { unique: true });
 
 export const Month = mongoose.model<IMonth>('Month', MonthSchema);

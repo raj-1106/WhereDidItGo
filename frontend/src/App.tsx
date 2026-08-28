@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import Dashboard from './pages/Dashboard';
 import MonthView from './pages/MonthView';
 import Insights from './pages/Insights';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import './App.css';
 
 export type Page = 'dashboard' | 'month' | 'insights';
@@ -11,10 +14,20 @@ export interface NavState {
   month?: number;
 }
 
-const App: React.FC = () => {
+const AppShell: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth();
+  const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [nav, setNav] = useState<NavState>({ page: 'dashboard' });
 
   const navigate = (state: NavState) => setNav(state);
+
+  if (!isAuthenticated) {
+    return authView === 'login' ? (
+      <Login onSwitchToRegister={() => setAuthView('register')} />
+    ) : (
+      <Register onSwitchToLogin={() => setAuthView('login')} />
+    );
+  }
 
   return (
     <div className="app">
@@ -35,6 +48,9 @@ const App: React.FC = () => {
             onClick={() => navigate({ page: 'insights' })}
           >
             Insights
+          </button>
+          <button className="nav-btn nav-btn-logout" onClick={logout}>
+            Logout
           </button>
         </div>
       </nav>
@@ -57,5 +73,11 @@ const App: React.FC = () => {
     </div>
   );
 };
+
+const App: React.FC = () => (
+  <AuthProvider>
+    <AppShell />
+  </AuthProvider>
+);
 
 export default App;

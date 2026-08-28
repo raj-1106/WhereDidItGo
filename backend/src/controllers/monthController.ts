@@ -1,21 +1,28 @@
 import { Request, Response } from 'express';
 import { Month } from '../models/Month';
 
-// GET /api/months - get all months summary
-export const getAllMonths = async (_req: Request, res: Response) => {
+// GET /api/months - get all months summary (this user only)
+export const getAllMonths = async (req: Request, res: Response) => {
   try {
-    const months = await Month.find({}, { expenses: 0 }).sort({ year: -1, month: -1 });
+    const months = await Month.find({ userId: req.user!.uid }, { expenses: 0 }).sort({
+      year: -1,
+      month: -1,
+    });
     res.json(months);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch months' });
   }
 };
 
-// GET /api/months/:year/:month - get single month with expenses
+// GET /api/months/:year/:month - get single month with expenses (this user only)
 export const getMonth = async (req: Request, res: Response) => {
   try {
     const { year, month } = req.params;
-    const doc = await Month.findOne({ year: Number(year), month: Number(month) });
+    const doc = await Month.findOne({
+      userId: req.user!.uid,
+      year: Number(year),
+      month: Number(month),
+    });
     if (!doc) return res.status(404).json({ error: 'Month not found' });
     res.json(doc);
   } catch (err) {
@@ -23,7 +30,7 @@ export const getMonth = async (req: Request, res: Response) => {
   }
 };
 
-// POST /api/months - create or update month salary
+// POST /api/months - create or update month salary (this user only)
 export const upsertMonth = async (req: Request, res: Response) => {
   try {
     const { year, month, salary } = req.body;
@@ -31,7 +38,7 @@ export const upsertMonth = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'year, month, and salary are required' });
     }
     const doc = await Month.findOneAndUpdate(
-      { year, month },
+      { userId: req.user!.uid, year, month },
       { $setOnInsert: { expenses: [] }, $set: { salary } },
       { upsert: true, new: true, runValidators: true }
     );
@@ -41,7 +48,7 @@ export const upsertMonth = async (req: Request, res: Response) => {
   }
 };
 
-// POST /api/months/:year/:month/expenses - add expense
+// POST /api/months/:year/:month/expenses - add expense (this user only)
 export const addExpense = async (req: Request, res: Response) => {
   try {
     const { year, month } = req.params;
@@ -49,7 +56,11 @@ export const addExpense = async (req: Request, res: Response) => {
     if (!description || amount === undefined || !category) {
       return res.status(400).json({ error: 'description, amount, and category are required' });
     }
-    const doc = await Month.findOne({ year: Number(year), month: Number(month) });
+    const doc = await Month.findOne({
+      userId: req.user!.uid,
+      year: Number(year),
+      month: Number(month),
+    });
     if (!doc) return res.status(404).json({ error: 'Month not found. Set salary first.' });
 
     doc.expenses.push({ description, amount, category, date: date ? new Date(date) : new Date() });
@@ -60,11 +71,15 @@ export const addExpense = async (req: Request, res: Response) => {
   }
 };
 
-// DELETE /api/months/:year/:month/expenses/:expenseId
+// DELETE /api/months/:year/:month/expenses/:expenseId (this user only)
 export const deleteExpense = async (req: Request, res: Response) => {
   try {
     const { year, month, expenseId } = req.params;
-    const doc = await Month.findOne({ year: Number(year), month: Number(month) });
+    const doc = await Month.findOne({
+      userId: req.user!.uid,
+      year: Number(year),
+      month: Number(month),
+    });
     if (!doc) return res.status(404).json({ error: 'Month not found' });
 
     doc.expenses = doc.expenses.filter((e: any) => e._id.toString() !== expenseId);
@@ -75,10 +90,10 @@ export const deleteExpense = async (req: Request, res: Response) => {
   }
 };
 
-// GET /api/insights - multi-month analytics
-export const getInsights = async (_req: Request, res: Response) => {
+// GET /api/insights - multi-month analytics (this user only)
+export const getInsights = async (req: Request, res: Response) => {
   try {
-    const months = await Month.find().sort({ year: 1, month: 1 });
+    const months = await Month.find({ userId: req.user!.uid }).sort({ year: 1, month: 1 });
     const insights = months.map((m) => {
       const totalExpenses = m.expenses.reduce((sum, e) => sum + e.amount, 0);
       const categoryBreakdown: Record<string, number> = {};

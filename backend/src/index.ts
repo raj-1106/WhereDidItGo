@@ -1,21 +1,25 @@
-import express from 'express';
-import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import monthRoutes from './routes/monthRoutes';
+import app from './app';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://rlathigra11_db_user:<JkjysRrQEO9uCVZw>@ac-ibgcby0-shard-00-00.idm3pkr.mongodb.net:27017,ac-ibgcby0-shard-00-01.idm3pkr.mongodb.net:27017,ac-ibgcby0-shard-00-02.idm3pkr.mongodb.net:27017/?ssl=true&replicaSet=atlas-y7x77s-shard-0&authSource=admin&appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
+const JWT_SECRET = process.env.JWT_SECRET;
 
-app.use(cors());
-app.use(express.json());
-
-app.use('/api', monthRoutes);
-
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+// Fail fast at boot instead of surfacing a cryptic error on the first request.
+// A hardcoded credential used to live here as a fallback default; it was
+// removed because it was committed to a public repo. Rotate that DB
+// password in Atlas if you haven't already.
+if (!MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set.');
+  process.exit(1);
+}
+if (!JWT_SECRET) {
+  console.error('❌ JWT_SECRET is not set.');
+  process.exit(1);
+}
 
 mongoose
   .connect(MONGODB_URI)
