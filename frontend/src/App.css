@@ -549,9 +549,19 @@ body {
   }
 
   .topnav {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
     background: #faf7f2;
     border-bottom: 1px solid var(--border-subtle);
+    gap: 0.5rem;
+  }
+
+  .brand-name {
+    display: none;
+  }
+
+  .nav-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
   }
 }
 
