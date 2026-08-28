@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { MonthData, MonthSummary, MonthInsight, AuthUser } from '../types';
+import { MonthData, MonthSummary, MonthInsight, AuthUser, BulkImportResult } from '../types';
 
 const TOKEN_KEY = 'wdig_token';
 
@@ -87,5 +87,10 @@ export const deleteExpense = async (
 
 export const fetchInsights = async (): Promise<MonthInsight[]> => {
   const { data } = await api.get('/insights');
+  return data;
+};
+
+export const bulkImportMonths = async (months: unknown[]): Promise<BulkImportResult> => {
+  const { data } = await api.post('/months/bulk', months);
   return data;
 };

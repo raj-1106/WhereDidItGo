@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { fetchAllMonths, upsertMonth, fetchInsights } from '../api';
-import { MonthSummary, MonthInsight, MONTH_NAMES } from '../types';
+import React, { useEffect, useState, useRef } from 'react';
+import { fetchAllMonths, upsertMonth, fetchInsights, bulkImportMonths } from '../api';
+import { MonthSummary, MonthInsight, MONTH_NAMES, BulkImportResult } from '../types';
+import { parseImportFile } from '../utils/parseImportFile';
 
 interface Props {
   onSelectMonth: (year: number, month: number) => void;
@@ -11,6 +12,10 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
   const [insights, setInsights] = useState<MonthInsight[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<BulkImportResult | null>(null);
+  const [importError, setImportError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const now = new Date();
   const [form, setForm] = useState({
@@ -55,6 +60,43 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
     }
   };
 
+  const handleImportClick = () => {
+    setImportError('');
+    setImportResult(null);
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    // Always clear the input value so selecting the same filename twice in
+    // a row still fires onChange the second time.
+    e.target.value = '';
+    if (!file) return;
+
+    setImportError('');
+    setImportResult(null);
+
+    let months: unknown[];
+    try {
+      const text = await file.text();
+      months = parseImportFile(text);
+    } catch (err: any) {
+      setImportError(err.message || 'Could not read that file');
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const result = await bulkImportMonths(months);
+      setImportResult(result);
+      load();
+    } catch (err: any) {
+      setImportError(err?.response?.data?.error || 'Import failed. Check backend connection.');
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const getInsightForMonth = (year: number, month: number) =>
     insights.find((i) => i.year === year && i.month === month);
 
@@ -75,10 +117,46 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
           <h1 className="page-title">Overview</h1>
           <p className="page-subtitle">All-time summary across {months.length} month{months.length !== 1 ? 's' : ''}</p>
         </div>
-        <button className="btn btn-primary" onClick={() => { setError(''); setShowModal(true); }}>
-          + New Month
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn btn-ghost" onClick={handleImportClick} disabled={importing}>
+            {importing ? 'Importing…' : 'Import Data'}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            style={{ display: 'none' }}
+            onChange={handleFileSelected}
+          />
+          <button className="btn btn-primary" onClick={() => { setError(''); setShowModal(true); }}>
+            + New Month
+          </button>
+        </div>
       </div>
+
+      {importError && <div className="alert alert-danger">{importError}</div>}
+      {importResult && (
+        <div className="alert alert-success" style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <div>
+            Imported: {importResult.monthsCreated} new month{importResult.monthsCreated !== 1 ? 's' : ''},{' '}
+            {importResult.monthsMerged} merged into existing, {importResult.expensesImported} expense
+            {importResult.expensesImported !== 1 ? 's' : ''} added.
+          </div>
+          {importResult.skippedMonths.length > 0 && (
+            <div style={{ fontSize: '0.8rem' }}>
+              Skipped {importResult.skippedMonths.length} month{importResult.skippedMonths.length !== 1 ? 's' : ''}:{' '}
+              {importResult.skippedMonths.map((s) => s.reason).join('; ')}
+            </div>
+          )}
+          {importResult.expenseErrorsByMonth.length > 0 && (
+            <div style={{ fontSize: '0.8rem' }}>
+              {importResult.expenseErrorsByMonth.reduce((n, m) => n + m.errors.length, 0)} expense row
+              {importResult.expenseErrorsByMonth.reduce((n, m) => n + m.errors.length, 0) !== 1 ? 's were' : ' was'} skipped
+              for invalid data (rest of the file imported normally).
+            </div>
+          )}
+        </div>
+      )}
 
       {error && <div className="alert alert-danger">{error}</div>}
 

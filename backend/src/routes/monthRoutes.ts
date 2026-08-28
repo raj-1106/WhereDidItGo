@@ -6,6 +6,7 @@ import {
   addExpense,
   deleteExpense,
   getInsights,
+  bulkImportMonths,
 } from '../controllers/monthController';
 import { authMiddleware } from '../middleware/authMiddleware';
 
@@ -18,6 +19,7 @@ router.use(authMiddleware);
 router.get('/months', getAllMonths);
 router.get('/months/:year/:month', getMonth);
 router.post('/months', upsertMonth);
+router.post('/months/bulk', bulkImportMonths);
 router.post('/months/:year/:month/expenses', addExpense);
 router.delete('/months/:year/:month/expenses/:expenseId', deleteExpense);
 router.get('/insights', getInsights);

@@ -18,6 +18,9 @@
   --success-dim: rgba(26, 92, 56, 0.1);
   --radius: 8px;
   --radius-lg: 14px;
+  --shadow-sm: 0 1px 3px rgba(26, 46, 26, 0.06), 0 1px 2px rgba(26, 46, 26, 0.04);
+  --shadow-md: 0 4px 12px rgba(26, 46, 26, 0.08), 0 2px 4px rgba(26, 46, 26, 0.05);
+  --shadow-lg: 0 12px 28px rgba(26, 46, 26, 0.12), 0 4px 10px rgba(26, 46, 26, 0.06);
 }
 
 * {
@@ -116,8 +119,8 @@ body {
   background: var(--bg-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .card-sm {
@@ -125,7 +128,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   padding: 1.25rem;
-  box-shadow: 0 4px 12px rgba(100, 110, 90, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 /* STATS ROW */
@@ -140,8 +143,8 @@ body {
   background: var(--bg-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
+  padding: 1.4rem 1.6rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-label {
@@ -221,9 +224,8 @@ body {
 }
 
 .btn-primary:hover {
-  background: #14472b;
+  background: #fbbf24;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(26, 92, 56, 0.15);
 }
 
 .btn-ghost {
@@ -394,17 +396,18 @@ body {
   background: var(--bg-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  padding: 1.25rem;
+  padding: 1.4rem;
   cursor: pointer;
   transition: all 0.18s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .month-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(26, 92, 56, 0.12);
+  box-shadow: var(--shadow-lg);
 }
 
 .month-card::before {
@@ -515,7 +518,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
+  box-shadow: var(--shadow-sm);
 }
 
 .chart-title {
@@ -549,19 +552,9 @@ body {
   }
 
   .topnav {
-    padding: 0 0.75rem;
+    padding: 0 1rem;
     background: #faf7f2;
     border-bottom: 1px solid var(--border-subtle);
-    gap: 0.5rem;
-  }
-
-  .brand-name {
-    display: none;
-  }
-
-  .nav-btn {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
   }
 }
 

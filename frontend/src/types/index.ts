@@ -11,6 +11,14 @@ export interface AuthUser {
   email: string;
 }
 
+export interface BulkImportResult {
+  monthsCreated: number;
+  monthsMerged: number;
+  expensesImported: number;
+  skippedMonths: { index: number; reason: string }[];
+  expenseErrorsByMonth: { year: number; month: number; errors: { index: number; reason: string }[] }[];
+}
+
 export interface MonthData {
   _id: string;
   year: number;
