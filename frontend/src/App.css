@@ -774,3 +774,24 @@ body {
 .nav-btn-logout {
   color: var(--danger);
 }
+
+.update-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--accent);
+  color: var(--bg-2);
+  padding: 10px;
+  font-size: 13px;
+}
+
+.update-banner button {
+  background: var(--bg-2);
+  color: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  padding: 4px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}

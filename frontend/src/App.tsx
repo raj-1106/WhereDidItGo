@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import MonthView from './pages/MonthView';
 import Insights from './pages/Insights';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { applyUpdate } from './serviceWorkerRegistration';
 import './App.css';
 
 export type Page = 'dashboard' | 'month' | 'insights';
@@ -18,6 +19,13 @@ const AppShell: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [nav, setNav] = useState<NavState>({ page: 'dashboard' });
+  const [updateAvailable, setUpdateAvailable] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setUpdateAvailable(true);
+    window.addEventListener('wdig:update-available', handler);
+    return () => window.removeEventListener('wdig:update-available', handler);
+  }, []);
 
   const navigate = (state: NavState) => setNav(state);
 
@@ -31,6 +39,12 @@ const AppShell: React.FC = () => {
 
   return (
     <div className="app">
+      {updateAvailable && (
+        <div className="update-banner">
+          <span>A new version is available.</span>
+          <button onClick={applyUpdate}>Refresh</button>
+        </div>
+      )}
       <nav className="topnav">
         <div className="nav-brand">
           <span className="brand-icon">◈</span>
