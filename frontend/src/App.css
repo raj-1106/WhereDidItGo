@@ -117,6 +117,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
 }
 
 .card-sm {
@@ -124,6 +125,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
   padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(100, 110, 90, 0.04);
 }
 
 /* STATS ROW */
@@ -139,6 +141,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
 }
 
 .stat-label {
@@ -218,8 +221,9 @@ body {
 }
 
 .btn-primary:hover {
-  background: #fbbf24;
+  background: #14472b;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 92, 56, 0.15);
 }
 
 .btn-ghost {
@@ -400,7 +404,7 @@ body {
 .month-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(26, 92, 56, 0.12);
 }
 
 .month-card::before {
@@ -511,6 +515,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(100, 110, 90, 0.05);
 }
 
 .chart-title {
