@@ -94,3 +94,7 @@ export const bulkImportMonths = async (months: unknown[]): Promise<BulkImportRes
   const { data } = await api.post('/months/bulk', months);
   return data;
 };
+
+export const deleteMonth = async (year: number, month: number): Promise<void> => {
+  await api.delete(`/months/${year}/${month}`);
+};

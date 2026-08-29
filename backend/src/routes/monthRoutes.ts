@@ -5,6 +5,7 @@ import {
   upsertMonth,
   addExpense,
   deleteExpense,
+  deleteMonth,
   getInsights,
   bulkImportMonths,
 } from '../controllers/monthController';
@@ -20,6 +21,7 @@ router.get('/months', getAllMonths);
 router.get('/months/:year/:month', getMonth);
 router.post('/months', upsertMonth);
 router.post('/months/bulk', bulkImportMonths);
+router.delete('/months/:year/:month', deleteMonth);
 router.post('/months/:year/:month/expenses', addExpense);
 router.delete('/months/:year/:month/expenses/:expenseId', deleteExpense);
 router.get('/insights', getInsights);

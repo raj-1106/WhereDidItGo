@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Wallet, TrendingDown, PiggyBank, Receipt } from 'lucide-react';
-import { fetchMonth, addExpense, deleteExpense, upsertMonth } from '../api';
+import { fetchMonth, addExpense, deleteExpense, upsertMonth, deleteMonth } from '../api';
 import { MonthData, CATEGORIES, MONTH_NAMES } from '../types';
 
 interface Props {
@@ -17,6 +17,8 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [showAddExpense, setShowAddExpense] = useState(false);
   const [showEditSalary, setShowEditSalary] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -97,6 +99,19 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
     }
   };
 
+  const handleDeleteMonth = async () => {
+    setDeleting(true);
+    setError('');
+    try {
+      await deleteMonth(year, month);
+      onBack(); // Dashboard re-fetches on its own mount effect, no need to signal it directly.
+    } catch {
+      setError('Failed to delete month');
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   if (loading) return <div className="loading">Loading month…</div>;
   if (!data) return <div className="loading">Month not found.</div>;
 
@@ -153,9 +168,14 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
             }
           </p>  
         </div>
-        <button className="btn btn-primary" onClick={() => { setError(''); setShowAddExpense(true); }}>
-          + Add Expense
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button className="btn btn-danger" onClick={() => setShowDeleteConfirm(true)}>
+            Delete Month
+          </button>
+          <button className="btn btn-primary" onClick={() => { setError(''); setShowAddExpense(true); }}>
+            + Add Expense
+          </button>
+        </div>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
@@ -408,6 +428,27 @@ const MonthView: React.FC<Props> = ({ year, month, onBack }) => {
               <button className="btn btn-ghost" onClick={() => { setShowEditSalary(false); setError(''); }}>Cancel</button>
               <button className="btn btn-primary" onClick={handleUpdateSalary} disabled={saving}>
                 {saving ? 'Saving…' : 'Update'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Month Confirmation */}
+      {showDeleteConfirm && (
+        <div className="modal-overlay" onClick={() => !deleting && setShowDeleteConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-title">Delete {MONTH_NAMES[month - 1]} {year}?</div>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+              This permanently deletes this month's salary record and all {data.expenses.length}{' '}
+              expense{data.expenses.length !== 1 ? 's' : ''} in it. This cannot be undone.
+            </p>
+            {error && <div className="alert alert-danger">{error}</div>}
+            <div className="modal-actions">
+              <button className="btn btn-ghost" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
+                Cancel
+              </button>
+              <button className="btn btn-danger" onClick={handleDeleteMonth} disabled={deleting}>
+                {deleting ? 'Deleting…' : 'Delete Permanently'}
               </button>
             </div>
           </div>

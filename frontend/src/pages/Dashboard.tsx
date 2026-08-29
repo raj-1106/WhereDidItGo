@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { fetchAllMonths, upsertMonth, fetchInsights, bulkImportMonths } from '../api';
 import { MonthSummary, MonthInsight, MONTH_NAMES, BulkImportResult } from '../types';
 import { parseImportFile } from '../utils/parseImportFile';
+import { groupMonthsByYear } from '../utils/groupMonthsByYear';
 
 interface Props {
   onSelectMonth: (year: number, month: number) => void;
@@ -187,54 +188,65 @@ const Dashboard: React.FC<Props> = ({ onSelectMonth }) => {
           <div className="empty-state-text">No months tracked yet. Add your first month.</div>
         </div>
       ) : (
-        <>
-          <div className="section-title">Monthly Records</div>
-          <div className="month-grid">
-            {months.map((m) => {
-              const ins = getInsightForMonth(m.year, m.month);
-              const savings = ins ? ins.savings : null;
-              const spentPct = ins && m.salary > 0 ? (ins.totalExpenses / m.salary) * 100 : 0;
-              return (
-                <div
-                  key={m._id}
-                  className="month-card"
-                  onClick={() => onSelectMonth(m.year, m.month)}
-                >
-                  <div className="month-card-year">{m.year}</div>
-                  <div className="month-card-name">{MONTH_NAMES[m.month - 1]}</div>
-                  <div className="month-card-salary">₹{m.salary.toLocaleString('en-IN')} salary</div>
-                  {savings !== null && (
-                    <div
-                      className="month-card-savings"
-                      style={{ color: savings >= 0 ? 'var(--success)' : 'var(--danger)' }}
-                    >
-                      {savings >= 0
-                        ? `↑ ₹${Math.abs(savings).toLocaleString('en-IN')} saved`
-                        : `↓ ₹${Math.abs(savings).toLocaleString('en-IN')} overspent`
-                      }
-                    </div>
-                  )}
-                  {ins && (
-                    <div className="progress-bar-track" style={{ marginTop: '0.75rem' }}>
+        groupMonthsByYear(months, insights).map((group) => (
+          <div key={group.year}>
+            <div className="section-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.4rem' }}>
+              <span>{group.year}</span>
+              <span style={{ fontFamily: 'DM Mono', fontSize: '0.7rem', fontWeight: 400, color: 'var(--text-muted)', textTransform: 'none', letterSpacing: 0 }}>
+                {group.months.length} month{group.months.length !== 1 ? 's' : ''} · ₹{group.totalIncome.toLocaleString('en-IN')} income · ₹
+                {group.totalExpenses.toLocaleString('en-IN')} spent ·{' '}
+                <span style={{ color: group.totalSaved >= 0 ? 'var(--success)' : 'var(--danger)' }}>
+                  ₹{Math.abs(group.totalSaved).toLocaleString('en-IN')} {group.totalSaved >= 0 ? 'saved' : 'overspent'}
+                </span>
+              </span>
+            </div>
+            <div className="month-grid" style={{ marginBottom: '1.5rem' }}>
+              {group.months.map((m) => {
+                const ins = getInsightForMonth(m.year, m.month);
+                const savings = ins ? ins.savings : null;
+                const spentPct = ins && m.salary > 0 ? (ins.totalExpenses / m.salary) * 100 : 0;
+                return (
+                  <div
+                    key={m._id}
+                    className="month-card"
+                    onClick={() => onSelectMonth(m.year, m.month)}
+                  >
+                    <div className="month-card-year">{m.year}</div>
+                    <div className="month-card-name">{MONTH_NAMES[m.month - 1]}</div>
+                    <div className="month-card-salary">₹{m.salary.toLocaleString('en-IN')} salary</div>
+                    {savings !== null && (
                       <div
-                        className="progress-bar-fill"
-                        style={{
-                          width: `${Math.min(spentPct, 100)}%`,
-                          background: spentPct > 90 ? 'var(--danger)' : spentPct > 70 ? 'var(--accent)' : 'var(--success)',
-                        }}
-                      />
-                    </div>
-                  )}
-                  {ins && (
-                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'DM Mono', marginTop: '0.3rem' }}>
-                      {spentPct.toFixed(0)}% spent · {ins.expenseCount} entries
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                        className="month-card-savings"
+                        style={{ color: savings >= 0 ? 'var(--success)' : 'var(--danger)' }}
+                      >
+                        {savings >= 0
+                          ? `↑ ₹${Math.abs(savings).toLocaleString('en-IN')} saved`
+                          : `↓ ₹${Math.abs(savings).toLocaleString('en-IN')} overspent`
+                        }
+                      </div>
+                    )}
+                    {ins && (
+                      <div className="progress-bar-track" style={{ marginTop: '0.75rem' }}>
+                        <div
+                          className="progress-bar-fill"
+                          style={{
+                            width: `${Math.min(spentPct, 100)}%`,
+                            background: spentPct > 90 ? 'var(--danger)' : spentPct > 70 ? 'var(--accent)' : 'var(--success)',
+                          }}
+                        />
+                      </div>
+                    )}
+                    {ins && (
+                      <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'DM Mono', marginTop: '0.3rem' }}>
+                        {spentPct.toFixed(0)}% spent · {ins.expenseCount} entries
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </>
+        ))
       )}
 
       {showModal && (

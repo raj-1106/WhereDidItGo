@@ -164,6 +164,22 @@ export const bulkImportMonths = async (req: Request, res: Response) => {
   });
 };
 
+// DELETE /api/months/:year/:month (this user only)
+export const deleteMonth = async (req: Request, res: Response) => {
+  try {
+    const { year, month } = req.params;
+    const doc = await Month.findOneAndDelete({
+      userId: req.user!.uid,
+      year: Number(year),
+      month: Number(month),
+    });
+    if (!doc) return res.status(404).json({ error: 'Month not found' });
+    res.json({ deleted: true, year: doc.year, month: doc.month });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete month' });
+  }
+};
+
 // GET /api/months - get all months summary (this user only)
 export const getAllMonths = async (req: Request, res: Response) => {
   try {
